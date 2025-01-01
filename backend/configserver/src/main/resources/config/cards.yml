@@ -1,0 +1,11 @@
+
+build:
+  version : "3.0"
+cards:
+  message: "Welcome to Eazybank Cards related dev APIs"
+  contactDetails:
+    name: "dev-Developer"
+    email: "dev@example.com"
+  onCallSupport:
+    - (555)555-1234
+    - (555)555-1234

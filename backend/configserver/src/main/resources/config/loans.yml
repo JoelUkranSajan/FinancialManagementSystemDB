@@ -1,0 +1,11 @@
+
+build:
+  version : "3.0"
+loans:
+  message: "Welcome to Eazybank loans related dev APIs"
+  contactDetails:
+    name: "dev-loansDeveloper"
+    email: "dev-loans@example.com"
+  onCallSupport:
+    - (555)555-1234
+    - (555)555-1234

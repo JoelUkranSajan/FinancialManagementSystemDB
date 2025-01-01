@@ -1,0 +1,15 @@
+spring:
+  config:
+    activate:
+      on-profile: "prod"
+
+build:
+  version : "1.0"
+loans:
+  message: "Welcome to Eazybank loans related prod APIs"
+  contactDetails:
+    name: "prod-loansDeveloper"
+    email: "prod-loans@example.com"
+  onCallSupport:
+    - (555)555-1234
+    - (555)555-1234

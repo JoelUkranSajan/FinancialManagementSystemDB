@@ -1,0 +1,15 @@
+spring:
+  config:
+    activate:
+      on-profile: "qa"
+
+build:
+  version : "2.0"
+cards:
+  message: "Welcome to Eazybank CARDS related QA APIs"
+  contactDetails:
+    name: "QA-CARDSDeveloper"
+    email: "QA-CARDS@example.com"
+  onCallSupport:
+    - (555)555-1234
+    - (555)555-1234
