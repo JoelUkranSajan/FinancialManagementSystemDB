@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-    const LOANS_SERVICE_BASE_URL = "http://loans:9000";
+    const LOANS_SERVICE_BASE_URL = process.env.LOANS_SERVICE_URL;
     const UPDATE_ENDPOINT = "/api/update";
   
     if (req.method === "PUT") {

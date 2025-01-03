@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-    const CARDS_SERVICE_BASE_URL = "http://cards:8090";
+    const CARDS_SERVICE_BASE_URL = process.env.CARDS_SERVICE_URL;
     const UPDATE_ENDPOINT = "/api/update";
   
     if (req.method === "PUT") {

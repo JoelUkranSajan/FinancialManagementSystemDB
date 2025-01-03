@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-    const ACCOUNTS_SERVICE_BASE_URL = "http://accounts:8081";
+    const ACCOUNTS_SERVICE_BASE_URL = process.env.ACCOUNTS_SERVICE_URL;
     const FETCH_ENDPOINT = "/api/fetch";
   
     const { mobileNumber } = req.query;

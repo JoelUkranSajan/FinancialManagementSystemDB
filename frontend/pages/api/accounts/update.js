@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-    const ACCOUNTS_SERVICE_BASE_URL = "http://accounts:8081";
+    const ACCOUNTS_SERVICE_BASE_URL = process.env.ACCOUNTS_SERVICE_URL;
     const UPDATE_ENDPOINT = "/api/update";
   
     if (req.method === "PUT") {

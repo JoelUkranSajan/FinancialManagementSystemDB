@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-    const LOANS_SERVICE_BASE_URL = "http://loans:9000";
+    const LOANS_SERVICE_BASE_URL = process.env.LOANS_SERVICE_URL;
     const FETCH_ENDPOINT = "/api/fetch";
   
     if (req.method === "GET") {

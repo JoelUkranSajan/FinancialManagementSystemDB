@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
     console.log("Incoming request:", req.method, req.url);
 
-    const ACCOUNTS_SERVICE_BASE_URL = "http://accounts:8081";
+    const ACCOUNTS_SERVICE_BASE_URL = process.env.ACCOUNTS_SERVICE_URL;
     const CREATE_ENDPOINT = "/api/create";
     if (req.method === 'POST') {
         const { name, email, mobile_number } = req.body;
