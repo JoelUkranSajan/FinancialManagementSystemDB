@@ -1,4 +1,7 @@
 export default async function handler(req, res) {
+    const LOANS_SERVICE_BASE_URL = "http://loans:9000";
+    const FETCH_ENDPOINT = "/api/fetch";
+  
     if (req.method === "GET") {
       const { mobileNumber } = req.query;
   
@@ -8,12 +11,11 @@ export default async function handler(req, res) {
   
       try {
         const response = await fetch(
-          `http://localhost:9000/api/fetch?mobileNumber=${mobileNumber}`,
+          `${LOANS_SERVICE_BASE_URL}${FETCH_ENDPOINT}?mobileNumber=${mobileNumber}`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              // If your loan endpoint requires this correlation ID header:
               "eazybank-correlation-id": "1",
             },
           }
@@ -31,7 +33,6 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: "Internal server error." });
       }
     } else {
-      // Only GET allowed
       return res.status(405).json({ error: "Method not allowed." });
     }
   }

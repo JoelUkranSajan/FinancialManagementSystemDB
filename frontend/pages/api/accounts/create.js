@@ -1,16 +1,16 @@
 export default async function handler(req, res) {
     console.log("Incoming request:", req.method, req.url);
 
+    const ACCOUNTS_SERVICE_BASE_URL = "http://accounts:8081";
+    const CREATE_ENDPOINT = "/api/create";
     if (req.method === 'POST') {
         const { name, email, mobile_number } = req.body;
 
-        // Ensure required fields are present
         if (!name || !email || !mobile_number) {
             console.log("Validation failed: Missing fields. Name:", name, "Email:", email, "Mobile:", mobile_number);
             return res.status(400).json({ error: 'All fields (name, email, mobile) are required' });
         }
 
-        // Validate mobile number format
         const mobileRegex = /^\d{10}$/;
         if (!mobileRegex.test(mobile_number)) {
             console.log("Validation failed: Invalid mobile number format. Mobile number:", mobile_number);
@@ -21,14 +21,12 @@ export default async function handler(req, res) {
 
         try {
 
-            // Log the data being sent to the Accounts service to debug
             console.log("Data being sent to Accounts service:", {
                 name,
                 email,
-                mobile: mobile_number  // Make sure the mobile number is present here
+                mobile: mobile_number  
             });
-            // Forward the request to the Accounts service (running on port 8081)
-            const response = await fetch('http://localhost:8081/api/create', {
+            const response = await fetch(`${ACCOUNTS_SERVICE_BASE_URL}${CREATE_ENDPOINT}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -36,7 +34,7 @@ export default async function handler(req, res) {
                 body: JSON.stringify({
                     name,
                     email,
-                    mobileNumber: mobile_number,  // Send the correct field format
+                    mobileNumber: mobile_number,  
                 }),
             });
 
@@ -45,7 +43,6 @@ export default async function handler(req, res) {
             const data = await response.json();
             console.log("Response data from Accounts service:", data);
 
-            // Respond with the data from the accounts service
             if (response.ok) {
                 console.log("Account registered successfully:", data);
                 return res.status(200).json({ message: 'Account registered successfully', account: data });

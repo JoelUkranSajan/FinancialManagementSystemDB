@@ -8,26 +8,28 @@ const Popup = ({
   closePopup,
   popupMessage = "",
   popupSuccess = false,
-  cardData = null, // example: { mobileNumber, cardNumber, cardType, totalLimit, amountUsed, availableAmount }
-  loanData = null, // example: { mobileNumber, loanNumber, loanType, loanAmount, ... }
+  cardData = null, // e.g. { mobileNumber, cardNumber, cardType, totalLimit, amountUsed, availableAmount }
+  loanData = null, // e.g. { mobileNumber, loanNumber, loanType, totalLoan, amountPaid }
 }) => {
   const router = useRouter();
 
-  // States used for "register" / "sign-in"
+  // Used for "register" or "sign-in" modes
   const [userData, setUserData] = useState({
     name: "",
     email: "",
     mobile_number: "",
   });
-  const [message, setMessage] = useState("");  
+  const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(false);
 
-  // Helper to validate a 10-digit mobile number
+  // Track whether we're currently submitting (to prevent multiple taps)
+  const [isSubmitting, setIsSubmitting] = useState(false); // Declared outside conditionally rendered blocks
+
   const validateMobile = (mobile) => /^\d{10}$/.test(mobile);
 
-  // ----------------------------------
+  //
   // 1) VIEW CARDS MODE
-  // ----------------------------------
+  //
   if (type === "view-cards" && cardData) {
     return (
       <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
@@ -36,14 +38,25 @@ const Popup = ({
             Card Details
           </h2>
           <div className="text-black space-y-2">
-            <p><strong>Mobile Number:</strong> {cardData.mobileNumber}</p>
-            <p><strong>Card Number:</strong> {cardData.cardNumber}</p>
-            <p><strong>Card Type:</strong> {cardData.cardType}</p>
-            <p><strong>Total Limit:</strong> {cardData.totalLimit}</p>
-            <p><strong>Amount Used:</strong> {cardData.amountUsed}</p>
-            <p><strong>Available Amount:</strong> {cardData.availableAmount}</p>
+            <p>
+              <strong>Mobile Number:</strong> {cardData.mobileNumber}
+            </p>
+            <p>
+              <strong>Card Number:</strong> {cardData.cardNumber}
+            </p>
+            <p>
+              <strong>Card Type:</strong> {cardData.cardType}
+            </p>
+            <p>
+              <strong>Total Limit:</strong> {cardData.totalLimit}
+            </p>
+            <p>
+              <strong>Amount Used:</strong> {cardData.amountUsed}
+            </p>
+            <p>
+              <strong>Available Amount:</strong> {cardData.availableAmount}
+            </p>
           </div>
-
           <button
             onClick={closePopup}
             className="mt-6 bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-full w-full"
@@ -55,9 +68,9 @@ const Popup = ({
     );
   }
 
-  // ----------------------------------
+  //
   // 2) ADD CARD MODE
-  // ----------------------------------
+  //
   if (type === "add-card") {
     return (
       <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
@@ -81,9 +94,9 @@ const Popup = ({
     );
   }
 
-  // ----------------------------------
+  //
   // 3) VIEW LOAN MODE
-  // ----------------------------------
+  //
   if (type === "view-loan" && loanData) {
     return (
       <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
@@ -92,14 +105,22 @@ const Popup = ({
             Loan Details
           </h2>
           <div className="text-black space-y-2">
-            <p><strong>Mobile Number:</strong> {loanData.mobileNumber}</p>
-            <p><strong>Loan Number:</strong> {loanData.loanNumber}</p>
-            <p><strong>Loan Type:</strong> {loanData.loanType}</p>
-            <p><strong>Loan Amount:</strong> {loanData.totalLoan}</p>
-            <p><strong>Paid Amount:</strong> {loanData.amountPaid}</p>
-            {/* Add other fields as needed for your domain */}
+            <p>
+              <strong>Mobile Number:</strong> {loanData.mobileNumber}
+            </p>
+            <p>
+              <strong>Loan Number:</strong> {loanData.loanNumber}
+            </p>
+            <p>
+              <strong>Loan Type:</strong> {loanData.loanType}
+            </p>
+            <p>
+              <strong>Loan Amount:</strong> {loanData.totalLoan}
+            </p>
+            <p>
+              <strong>Paid Amount:</strong> {loanData.amountPaid}
+            </p>
           </div>
-
           <button
             onClick={closePopup}
             className="mt-6 bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-full w-full"
@@ -111,9 +132,9 @@ const Popup = ({
     );
   }
 
-  // ----------------------------------
+  //
   // 4) ADD LOAN MODE
-  // ----------------------------------
+  //
   if (type === "add-loan") {
     return (
       <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
@@ -137,31 +158,34 @@ const Popup = ({
     );
   }
 
-  // ----------------------------------
+  //
   // 5) REGISTER / SIGN-IN MODE
-  // ----------------------------------
+  //
   if (type === "register" || type === "sign-in") {
     const handleSubmit = async (e) => {
       e.preventDefault();
-      setMessage(""); // Clear previous message
 
-      // Registration requires name, email, mobile
+      // If already submitting, ignore further taps
+      if (isSubmitting) return;
+
+      setIsSubmitting(true);
+      setMessage("");
+
       if (type === "register") {
         if (!userData.name || !userData.email || !userData.mobile_number) {
           setMessage("All fields (name, email, mobile) are required.");
+          setIsSubmitting(false);
           return;
         }
       }
-
-      // Validate mobile
       if (!validateMobile(userData.mobile_number)) {
         setMessage("Please enter a valid 10-digit mobile number.");
+        setIsSubmitting(false);
         return;
       }
 
       console.log("Sending user data: ", userData);
 
-      // =========== REGISTER ===========
       if (type === "register") {
         try {
           const response = await fetch("/api/accounts/create", {
@@ -191,9 +215,9 @@ const Popup = ({
           setSuccess(false);
           setMessage("Error: Unable to register.");
           console.error("Registration failed:", error);
+        } finally {
+          setIsSubmitting(false);
         }
-
-      // =========== SIGN-IN ===========
       } else if (type === "sign-in") {
         try {
           const response = await fetch(
@@ -218,6 +242,8 @@ const Popup = ({
           setSuccess(false);
           setMessage("Error: Unable to sign in.");
           console.error("Sign-in failed:", error);
+        } finally {
+          setIsSubmitting(false);
         }
       }
     };
@@ -241,7 +267,9 @@ const Popup = ({
             {type === "register" && (
               <>
                 <div>
-                  <label className="block text-gray-700 mb-2 text-sm">Name</label>
+                  <label className="block text-gray-700 mb-2 text-sm">
+                    Name
+                  </label>
                   <input
                     type="text"
                     name="name"
@@ -253,7 +281,9 @@ const Popup = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 mb-2 text-sm">Email</label>
+                  <label className="block text-gray-700 mb-2 text-sm">
+                    Email
+                  </label>
                   <input
                     type="email"
                     name="email"
@@ -268,7 +298,9 @@ const Popup = ({
             )}
 
             <div>
-              <label className="block text-gray-700 mb-2 text-sm">Mobile Number</label>
+              <label className="block text-gray-700 mb-2 text-sm">
+                Mobile Number
+              </label>
               <input
                 type="text"
                 name="mobile_number"
@@ -282,9 +314,14 @@ const Popup = ({
 
             <button
               type="submit"
+              disabled={isSubmitting}
               className="bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-full w-full"
             >
-              {type === "register" ? "Submit" : "Sign In"}
+              {isSubmitting
+                ? "Loading..."
+                : type === "register"
+                ? "Submit"
+                : "Sign In"}
             </button>
           </form>
 
@@ -299,17 +336,18 @@ const Popup = ({
           <button
             onClick={closePopup}
             className="mt-4 bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-full w-full"
+            disabled={isSubmitting}
           >
-            Close
+            {isSubmitting ? "Processing..." : "Close"}
           </button>
         </div>
       </div>
     );
   }
 
-  // ----------------------------------
-  // 6) FALLBACK (No recognized type)
-  // ----------------------------------
+  //
+  // 6) FALLBACK (Unrecognized type)
+  //
   return null;
 };
 
