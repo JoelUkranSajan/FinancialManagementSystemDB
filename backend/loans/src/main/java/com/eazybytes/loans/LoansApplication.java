@@ -9,7 +9,10 @@ import io.swagger.v3.oas.annotations.info.License;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 /*@ComponentScans({ @ComponentScan("com.eazybytes.loans.controller") })
@@ -41,5 +44,22 @@ public class LoansApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(LoansApplication.class, args);
+	}
+
+	/**
+	 * Configures CORS mappings for the Loans microservice.
+	 */
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**") // Allow all endpoints
+						.allowedOrigins("http://localhost:3000" , "https://financial-management-system-db.vercel.app") // Frontend URL
+						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // HTTP methods
+						.allowedHeaders("*") // Allow all headers
+						.allowCredentials(true); // Allow credentials
+			}
+		};
 	}
 }
